@@ -66,3 +66,17 @@
   [search-q contacts]
   (list (contact-form search-q)
         (contacts-list contacts)))
+
+(defn contact-view
+  [id {:keys [fname lname email phone] :as _contact-details}]
+  (list
+   [:h1 fname " " lname]
+   [:p "Phone: " phone]
+   [:p "Email: " email]
+   [:p
+    [:a {:href (format "/contacts/%s/edit" id)} "Edit"]
+    " / "
+    [:a {:href "/contacts"} "back"]]))
+
+(comment
+  (contact-view "2" study-htmx.web-one-app/contacts-db))

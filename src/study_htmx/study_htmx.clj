@@ -75,7 +75,11 @@
       :post [(body-params/body-params)
              params/keyword-params
              web-one/new-contact-add-handler]
-      :route-name ::web-one/new-contact-add]}))
+      :route-name ::web-one/new-contact-add]
+     ["/contacts/:id/view"
+      :get [(body-params/body-params)
+            web-one/view-contact-handler]
+      :route-name ::web-one/view-contact-page]}))
 
 (defn create-server
   [system-map]

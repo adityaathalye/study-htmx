@@ -83,6 +83,18 @@
                               (shr/see-other "/contacts" headers))]
                (assoc context :response response)))}))
 
+(def view-contact-handler
+  (interceptor/interceptor
+   {:name ::view-contact-page
+    :enter (fn [{:keys [request] :as context}]
+             (let [id (-> request :path-params :id)
+                   contact (get @contacts-db id)]
+               (->> contact
+                    (sht/contact-view id)
+                    sht/layout
+                    shr/ok
+                    (assoc context :response))))}))
+
 (comment
   (search-contacts "foo" @contacts-db)
 
