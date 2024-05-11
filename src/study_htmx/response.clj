@@ -17,8 +17,8 @@
   [body & {:as headers}]
   (response 404 body headers))
 
-(defn redirect
+(defn see-other
   [url & {:as headers}]
-  {:status 302
+  {:status 303
    :headers (assoc headers "Location" url)
    :body ""})

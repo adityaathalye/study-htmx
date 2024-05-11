@@ -80,7 +80,7 @@
                                    sht/layout
                                    shr/ok
                                    (assoc context :response))
-                              (shr/redirect "/contacts" headers))]
+                              (shr/see-other "/contacts" headers))]
                (assoc context :response response)))}))
 
 (comment

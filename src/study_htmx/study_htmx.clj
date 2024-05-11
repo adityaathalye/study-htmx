@@ -55,7 +55,7 @@
   {:name ::root
    :enter (fn [context]
             (assoc context :response
-                   (shr/redirect path (:headers context))))})
+                   (shr/see-other path (:headers context))))})
 
 (def routes
   (route/routes-from
