@@ -19,9 +19,11 @@
 
 (defn search-contacts
   [query-str contacts]
-  (filter (fn [[_id {:keys [fname lname]}]]
+  (filter (fn [[_id {:keys [fname lname email]
+                     :or {fname "" lname "" email ""}}]]
             (or (s/includes? fname query-str)
-                (s/includes? lname query-str)))
+                (s/includes? lname query-str)
+                (s/includes? email query-str)))
           contacts))
 
 (def search-contacts-handler
@@ -37,7 +39,51 @@
                     shr/ok
                     (assoc context :response))))}))
 
+(def new-contact-page-handler
+  (interceptor/interceptor
+   {:name ::new-contact-page
+    :enter (fn [context]
+             (->> (sht/contact-new {:show-error-set #{}})
+                  sht/layout
+                  shr/ok
+                  (assoc context :response)))}))
+
+(defn new-contact!
+  [db contact]
+  (let [id (->> @db
+                keys
+                (map #(Integer/parseInt %))
+                (apply max)
+                inc
+                str)
+        errors (reduce-kv (fn [errors k v]
+                            (if (s/blank? v)
+                              (conj errors k)
+                              errors))
+                          #{}
+                          contact)]
+    (if (not-empty errors)
+      (assoc contact :show-error-set errors)
+      (do (swap! db assoc id
+                 (dissoc contact :show-error-set))
+          (get @db id)))))
+
+(def new-contact-add-handler
+  (interceptor/interceptor
+   {:name ::new-contact-add
+    :enter (fn [{:keys [request headers] :as context}]
+             (let [new-contact-data (:form-params request)
+                   maybe-new-contact (new-contact! contacts-db
+                                                   new-contact-data)
+                   response (if (not-empty (:show-error-set maybe-new-contact))
+                              (->> (sht/contact-new maybe-new-contact)
+                                   sht/layout
+                                   shr/ok
+                                   (assoc context :response))
+                              (shr/redirect "/contacts" headers))]
+               (assoc context :response response)))}))
+
 (comment
-  (search-contacts "foo" contacts-db)
+  (search-contacts "foo" @contacts-db)
 
   'a)

@@ -1,12 +1,13 @@
 (ns study-htmx.templates
-  (:require [hiccup.page :as hp]))
+  (:require [hiccup.page :as hp]
+            [hiccup.form :as hf]))
 
 (defn layout
   [body]
   (list
    [:head
-    (hp/include-css "css/site.css")
-    [:title "Contacts App"]]
+    [:title "Contacts App"]
+    (hp/include-css "/css/site.css")]
    [:body body]))
 
 (defn contact-form
@@ -18,16 +19,48 @@
 
 (defn contacts-list
   [contacts]
-  [:table
-   [:thead
-    [:tr [:td "First Name"] [:td "Last Name"] [:td "Phone"] [:td "Email"] [:td "Action"]]]
-   [:tbody
-    (for [[id {:keys [fname lname phone email]}] contacts]
-      [:tr
-       [:td fname] [:td lname] [:td phone] [:td email]
-       [:td
-        [:a {:href (format "/contacts/%s/edit" id)} "Edit"] " / "
-        [:a {:href (format "/contacts/%s/view" id)} "View"]]])]])
+  (list
+   [:table
+    [:thead
+     [:tr [:td "First Name"] [:td "Last Name"] [:td "Phone"] [:td "Email"] [:td "Action"]]]
+    [:tbody
+     (for [[id {:keys [fname lname phone email]}] contacts]
+       [:tr
+        [:td fname] [:td lname] [:td phone] [:td email]
+        [:td
+         [:a {:href (format "/contacts/%s/edit" id)} "Edit"] " / "
+         [:a {:href (format "/contacts/%s/view" id)} "View"]]])]]
+   [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
+
+(defn contact-new
+  [{:keys [fname lname phone email show-error-set]
+    :or {show-error-set #{}}
+    :as _contact}]
+  (hf/form-to [:post "/contacts/new"]
+              [:fieldset
+               [:legend "Contact Values"]
+               [:p
+                (hf/label "email" "Email: ")
+                (hf/email-field "email" email)
+                (when (show-error-set :email)
+                  [:span {:class "error"} "Bad email address."])]
+               [:p
+                (hf/label "fname" "First Name: ")
+                (hf/text-field "fname" fname)
+                (when (show-error-set :fname)
+                  [:span {:class "error"} "Bad first name."])]
+               [:p
+                (hf/label "lname" "Last Name: ")
+                (hf/text-field "lname" lname)
+                (when (show-error-set :lname)
+                  [:span {:class "error"} "Bad last name."])]
+               [:p
+                (hf/label "phone" "Phone Number: ")
+                (hf/text-field "phone" phone)
+                (when (show-error-set :phone)
+                  [:span {:class "error"} "Bad phone number."])]
+               (hf/submit-button "Submit")]
+              [:a {:href "/contacts"} "Back"]))
 
 (defn contacts-page-body
   [search-q contacts]

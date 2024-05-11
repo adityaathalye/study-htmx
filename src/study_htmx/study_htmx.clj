@@ -6,6 +6,8 @@
    [io.pedestal.http.content-negotiation :as content-negotiation]
    [io.pedestal.http.route :as route]
    [io.pedestal.interceptor :as interceptor]
+   [io.pedestal.http.body-params :as body-params]
+   [io.pedestal.http.params :as params]
    [study-htmx.web-one-app :as web-one]
    [study-htmx.templates :as sht]))
 
@@ -57,9 +59,23 @@
 
 (def routes
   (route/routes-from
-   #{["/" :get (redirect-root-handler "/contacts") :route-name ::root]
-     ["/greet" :get greet-handler :route-name ::greet]
-     ["/contacts" :get web-one/search-contacts-handler :route-name ::web-one/search-contacts]}))
+   #{["/"
+      :get (redirect-root-handler "/contacts")
+      :route-name ::root]
+     ["/greet"
+      :get greet-handler
+      :route-name ::greet]
+     ["/contacts"
+      :get web-one/search-contacts-handler
+      :route-name ::web-one/search-contacts]
+     ["/contacts/new"
+      :get web-one/new-contact-page-handler
+      :route-name ::web-one/new-contact-page]
+     ["/contacts/new"
+      :post [(body-params/body-params)
+             params/keyword-params
+             web-one/new-contact-add-handler]
+      :route-name ::web-one/new-contact-add]}))
 
 (defn create-server
   [system-map]

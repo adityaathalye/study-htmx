@@ -1,5 +1,5 @@
 (ns study-htmx.response
-  (:require [hiccup2.core :as h]))
+  (:require [hiccup.page :as hp]))
 
 (defn response
   ([_status])
@@ -7,7 +7,7 @@
    (merge
     {:status status
      :headers (assoc headers "Content-Type" "text/html")}
-    (when body {:body (-> body h/html str)}))))
+    (when body {:body (hp/html5 body)}))))
 
 (defn ok
   [body & {:as headers}]
