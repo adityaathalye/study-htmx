@@ -52,7 +52,6 @@
   [path]
   {:name ::root
    :enter (fn [context]
-            (println (str "Params: " (-> context :request :params)))
             (assoc context :response
                    (shr/redirect path (:headers context))))})
 
