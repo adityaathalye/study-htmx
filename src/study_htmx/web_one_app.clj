@@ -78,8 +78,7 @@
                    response (if (not-empty (:show-error-set maybe-new-contact))
                               (->> (sht/contact-new maybe-new-contact)
                                    sht/layout
-                                   shr/ok
-                                   (assoc context :response))
+                                   shr/ok)
                               (shr/see-other "/contacts" headers))]
                (assoc context :response response)))}))
 
