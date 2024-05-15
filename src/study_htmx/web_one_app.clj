@@ -48,15 +48,9 @@
                   shr/ok
                   (assoc context :response)))}))
 
-(defn new-contact!
-  [db contact]
-  (let [id (->> @db
-                keys
-                (map #(Integer/parseInt %))
-                (apply max)
-                inc
-                str)
-        errors (reduce-kv (fn [errors k v]
+(defn create-or-update-contact!
+  [db id contact]
+  (let [errors (reduce-kv (fn [errors k v]
                             (if (s/blank? v)
                               (conj errors k)
                               errors))
@@ -67,6 +61,16 @@
       (do (swap! db assoc id
                  (dissoc contact :show-error-set))
           (get @db id)))))
+
+(defn new-contact!
+  [db contact]
+  (let [id (->> @db
+                keys
+                (map #(Integer/parseInt %))
+                (apply max)
+                inc
+                str)]
+    (create-or-update-contact! id db contact)))
 
 (def new-contact-add-handler
   (interceptor/interceptor
@@ -93,6 +97,36 @@
                     sht/layout
                     shr/ok
                     (assoc context :response))))}))
+
+(def edit-contact-page-handler
+  (interceptor/interceptor
+   {:name ::edit-contact-page
+    :enter (fn [{:keys [request] :as context}]
+             (let [id (-> request :path-params :id)
+                   contact (get @contacts-db id)]
+               (->> contact
+                    (sht/contact-edit id)
+                    sht/layout
+                    shr/ok
+                    (assoc context :response))))}))
+
+(def edit-contact-handler
+  (interceptor/interceptor
+   {:name ::edit-contact-handler
+    :enter (fn [{:keys [request headers] :as context}]
+             (let [id (-> request :path-params :id)
+                   new-contact-data (:form-params request)
+                   maybe-new-contact (create-or-update-contact!
+                                      contacts-db
+                                      id
+                                      new-contact-data)
+                   response (if (not-empty (:show-error-set maybe-new-contact))
+                              (->> maybe-new-contact
+                                   (sht/contact-edit id)
+                                   sht/layout
+                                   shr/ok)
+                              (shr/see-other "/contacts" headers))]
+               (assoc context :response response)))}))
 
 (comment
   (search-contacts "foo" @contacts-db)

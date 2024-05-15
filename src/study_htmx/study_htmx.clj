@@ -82,7 +82,12 @@
      :route-name ::web-one/view-contact-page]
     ["/contacts/edit/:id"
      :get web-one/edit-contact-page-handler
-     :route-name ::web-one/edit-contact-page]})
+     :route-name ::web-one/edit-contact-page]
+    ["/contacts/edit/:id"
+     :post [(body-params/body-params)
+            params/keyword-params
+            web-one/edit-contact-handler]
+     :route-name ::web-one/edit-contact-handler]})
 
 (def url-for
   (-> routes table/table-routes route/url-for-routes))
