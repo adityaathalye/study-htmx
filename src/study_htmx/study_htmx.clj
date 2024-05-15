@@ -8,6 +8,7 @@
    [io.pedestal.interceptor :as interceptor]
    [io.pedestal.http.body-params :as body-params]
    [io.pedestal.http.params :as params]
+   [io.pedestal.http.route.definition.table :as table]
    [study-htmx.web-one-app :as web-one]
    [study-htmx.templates :as sht]))
 
@@ -58,32 +59,43 @@
                    (shr/see-other path (:headers context))))})
 
 (def routes
-  (route/routes-from
-   #{["/"
-      :get (redirect-root-handler "/contacts")
-      :route-name ::root]
-     ["/greet"
-      :get greet-handler
-      :route-name ::greet]
-     ["/contacts"
-      :get web-one/search-contacts-handler
-      :route-name ::web-one/search-contacts]
-     ["/contacts/new"
-      :get web-one/new-contact-page-handler
-      :route-name ::web-one/new-contact-page]
-     ["/contacts/new"
-      :post [(body-params/body-params)
-             params/keyword-params
-             web-one/new-contact-add-handler]
-      :route-name ::web-one/new-contact-add]
-     ["/contacts/:id/view"
-      :get [(body-params/body-params)
-            web-one/view-contact-handler]
-      :route-name ::web-one/view-contact-page]}))
+  #{["/"
+     :get (redirect-root-handler "/contacts")
+     :route-name ::root]
+    ["/greet"
+     :get greet-handler
+     :route-name ::greet]
+    ["/contacts"
+     :get web-one/search-contacts-handler
+     :route-name ::web-one/search-contacts]
+    ["/contacts/new"
+     :get web-one/new-contact-page-handler
+     :route-name ::web-one/new-contact-page]
+    ["/contacts/new"
+     :post [(body-params/body-params)
+            params/keyword-params
+            web-one/new-contact-add-handler]
+     :route-name ::web-one/new-contact-add]
+    ["/contacts/view/:id"
+     :get [(body-params/body-params)
+           web-one/view-contact-handler]
+     :route-name ::web-one/view-contact-page]
+    ["/contacts/edit/:id"
+     :get web-one/edit-contact-page-handler
+     :route-name ::web-one/edit-contact-page]})
+
+(def url-for
+  (-> routes table/table-routes route/url-for-routes))
+
+(comment
+  (url-for ::web-one/new-contact-page)
+  (url-for ::web-one/view-contact-page :params {:id 1})
+
+  #_())
 
 (defn create-server
   [system-map]
-  (let [service-map {::http/routes routes
+  (let [service-map {::http/routes (route/routes-from routes)
                      ::http/type :jetty
                      ::http/join? false
                      ::http/port (-> system-map ::server :port)
