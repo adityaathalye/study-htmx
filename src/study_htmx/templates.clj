@@ -84,11 +84,12 @@
 
 (defn contact-edit
   [id contact]
-  (hf/form-to [:post (format "/contacts/edit/%s" id)]
-              (contact-form contact)
-              [:p
-               [:a {:href "/contacts"} "Back"] " / "
-               [:a {:href (format "/contacts/delete/%s" id)} "Delete"]]))
+  (list
+   (hf/form-to [:post (format "/contacts/edit/%s" id)]
+               (contact-form contact)
+               [:p [:a {:href "/contacts"} "Back"]])
+   (hf/form-to [:post (format "/contacts/delete/%s" id)]
+               [:button "Delete Contact"])))
 
 (comment
   (contact-view "2" study-htmx.web-one-app/contacts-db)

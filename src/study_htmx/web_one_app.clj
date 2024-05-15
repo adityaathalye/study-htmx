@@ -128,6 +128,15 @@
                               (shr/see-other "/contacts" headers))]
                (assoc context :response response)))}))
 
+(def delete-contact-handler
+  (interceptor/interceptor
+   {:name ::delete-contact-handler
+    :enter (fn [{:keys [request headers] :as context}]
+             (let [id (-> request :path-params :id)]
+               (swap! contacts-db dissoc id)
+               (assoc context :response
+                      (shr/see-other "/contacts" headers))))}))
+
 (comment
   (search-contacts "foo" @contacts-db)
 

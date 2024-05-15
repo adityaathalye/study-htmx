@@ -87,7 +87,10 @@
      :post [(body-params/body-params)
             params/keyword-params
             web-one/edit-contact-handler]
-     :route-name ::web-one/edit-contact-handler]})
+     :route-name ::web-one/edit-contact-handler]
+    ["/contacts/delete/:id"
+     :post web-one/delete-contact-handler
+     :route-name ::web-one/delete-contact-handler]})
 
 (def url-for
   (-> routes table/table-routes route/url-for-routes))
@@ -95,6 +98,7 @@
 (comment
   (url-for ::web-one/new-contact-page)
   (url-for ::web-one/view-contact-page :params {:id 1})
+  (url-for ::web-one/delete-contact-handler :params {:id 1})
 
   #_())
 
