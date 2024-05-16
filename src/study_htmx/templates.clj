@@ -7,8 +7,12 @@
   (list
    [:head
     [:title "Contacts App"]
-    (hp/include-css "/css/site.css")]
-   [:body body]))
+    (hp/include-css "/css/site.css")
+    [:script {:type "text/javascript"
+              :src "https://unpkg.com/htmx.org@1.9.2"
+              :integrity "sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h"
+              :crossorigin "anonymous"}]]
+   [:body {:hx-boost "true"} body]))
 
 (defn contact-search-form
   [search-q]
