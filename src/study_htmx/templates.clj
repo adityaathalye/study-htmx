@@ -92,8 +92,9 @@
    (hf/form-to [:post (format "/contacts/edit/%s" id)]
                (contact-form contact)
                [:p [:a {:href "/contacts"} "Back"]])
-   (hf/form-to [:post (format "/contacts/delete/%s" id)]
-               [:button "Delete Contact"])))
+   [:button {:hx-delete (format "/contacts/delete/%s" id)
+             :hx-target "body"
+             :hx-push-url "true"} "Delete Contact"]))
 
 (comment
   (contact-view "2" study-htmx.web-one-app/contacts-db)

@@ -89,7 +89,7 @@
             web-one/edit-contact-handler]
      :route-name ::web-one/edit-contact-handler]
     ["/contacts/delete/:id"
-     :post web-one/delete-contact-handler
+     :delete web-one/delete-contact-handler
      :route-name ::web-one/delete-contact-handler]})
 
 (def url-for
