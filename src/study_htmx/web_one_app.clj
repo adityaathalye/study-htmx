@@ -70,7 +70,7 @@
                 (apply max)
                 inc
                 str)]
-    (create-or-update-contact! id db contact)))
+    (create-or-update-contact! db id contact)))
 
 (def new-contact-add-handler
   (interceptor/interceptor
