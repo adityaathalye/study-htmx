@@ -94,7 +94,8 @@
                [:p [:a {:href "/contacts"} "Back"]])
    [:button {:hx-delete (format "/contacts/delete/%s" id)
              :hx-target "body"
-             :hx-push-url "true"} "Delete Contact"]))
+             :hx-push-url "true"
+             :hx-confirm "Delete for sure?!"} "Delete Contact"]))
 
 (comment
   (contact-view "2" study-htmx.web-one-app/contacts-db)
