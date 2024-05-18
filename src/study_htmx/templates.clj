@@ -44,9 +44,11 @@
    [:legend "Contact Values"]
    [:p
     (hf/label "email" "Email: ")
-    (hf/email-field "email" email)
-    (when (show-error-set :email)
-      [:span {:class "error"} "Bad email address."])]
+    (hf/email-field {:hx-get "/contacts/validate-email"
+                     :hx-target "next .error"
+                     :placeholder "Email"}
+                    "email" email)
+    [:span {:class "error"} (when (show-error-set :email) "Bad email address.")]]
    [:p
     (hf/label "fname" "First Name: ")
     (hf/text-field "fname" fname)

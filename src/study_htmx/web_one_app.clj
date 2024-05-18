@@ -48,6 +48,10 @@
                   shr/ok
                   (assoc context :response)))}))
 
+(defn duplicate-email?
+  [contacts email]
+  (some #(= email (:email %)) contacts))
+
 (defn create-or-update-contact!
   [db id contact]
   (let [errors (reduce-kv (fn [errors k v]
@@ -136,6 +140,17 @@
                (swap! contacts-db dissoc id)
                (assoc context :response
                       (shr/see-other "/contacts" headers))))}))
+
+(def validate-email-for-contact
+  (interceptor/interceptor
+   {:name ::validate-email-for-contact
+    :enter (fn [{:keys [request] :as context}]
+             (let [input-email (-> request :params :email)
+                   response (when (duplicate-email? (vals @contacts-db)
+                                                    input-email)
+                              "Sorry. Email already taken.")]
+               (assoc context :response
+                      (-> response shr/ok))))}))
 
 (comment
   (search-contacts "foo" @contacts-db)

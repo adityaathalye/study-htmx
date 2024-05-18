@@ -90,7 +90,11 @@
      :route-name ::web-one/edit-contact-handler]
     ["/contacts/delete/:id"
      :delete web-one/delete-contact-handler
-     :route-name ::web-one/delete-contact-handler]})
+     :route-name ::web-one/delete-contact-handler]
+    ["/contacts/validate-email"
+     :get [params/keyword-params
+           web-one/validate-email-for-contact]
+     :route-name ::web-one/validate-email-for-contact]})
 
 (def url-for
   (-> routes table/table-routes route/url-for-routes))
