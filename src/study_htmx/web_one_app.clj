@@ -49,8 +49,9 @@
                   (assoc context :response)))}))
 
 (defn duplicate-email?
-  [contacts email]
-  (some #(= email (:email %)) contacts))
+  [db email]
+  (some #(= email (:email %))
+        (vals @db)))
 
 (defn create-or-update-contact!
   [db id contact]
@@ -59,7 +60,10 @@
                               (conj errors k)
                               errors))
                           #{}
-                          contact)]
+                          contact)
+        errors (if (duplicate-email? db (:email contact))
+                 (conj errors :email-duplicate)
+                 errors)]
     (if (not-empty errors)
       (assoc contact :show-error-set errors)
       (do (swap! db assoc id
@@ -146,7 +150,7 @@
    {:name ::validate-email-for-contact
     :enter (fn [{:keys [request] :as context}]
              (let [input-email (-> request :params :email)
-                   response (when (duplicate-email? (vals @contacts-db)
+                   response (when (duplicate-email? contacts-db
                                                     input-email)
                               "Sorry. Email already taken.")]
                (assoc context :response

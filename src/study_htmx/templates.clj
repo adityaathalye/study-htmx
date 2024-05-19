@@ -48,7 +48,9 @@
                      :hx-target "next .error"
                      :placeholder "Email"}
                     "email" email)
-    [:span {:class "error"} (when (show-error-set :email) "Bad email address.")]]
+    [:span {:class "error"}
+     (when (show-error-set :email) "Bad email address. ")
+     (when (show-error-set :email-duplicate) "Sorry. Email already exists. ")]]
    [:p
     (hf/label "fname" "First Name: ")
     (hf/text-field "fname" fname)
