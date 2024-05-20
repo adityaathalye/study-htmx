@@ -76,8 +76,14 @@
               [:a {:href "/contacts"} "Back"]))
 
 (defn contacts-page-body
-  [search-q contacts]
+  [search-q contacts total-pages current-page]
   (list (contact-search-form search-q)
+        [:p
+         (when (> current-page 1)
+           [:a {:href (format "/contacts?page=%s" (max (dec current-page) 1))} "< Prev"])
+         (format " (current page: %s) " current-page)
+         (when (< current-page total-pages)
+           [:a {:href (format "/contacts?page=%s" (max (inc current-page) 1))} "Next >"])]
         (contacts-list contacts)))
 
 (defn contact-view

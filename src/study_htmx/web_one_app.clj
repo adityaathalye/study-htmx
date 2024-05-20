@@ -30,11 +30,24 @@
   (interceptor/interceptor
    {:name ::search-contacts
     :enter (fn [{:keys [request] :as context}]
-             (let [q (-> request :query-params :q)
+             (let [page-size 2
+                   q (-> request :query-params :q)
+                   page (-> request :query-params :page
+                            ((fnil Integer/parseInt "1"))
+                            (max 1))
                    contacts (if (s/blank? q)
                               @contacts-db
-                              (search-contacts q @contacts-db))]
-               (->> (sht/contacts-page-body q contacts)
+                              (search-contacts q @contacts-db))
+                   contacts-paged (partition-all page-size contacts)
+                   num-pages (count contacts-paged)
+                   current-page (if (>= page num-pages)
+                                  num-pages
+                                  page)
+                   page-of-contacts (nth contacts-paged (dec current-page))
+                   page-of-contacts (into {} page-of-contacts)]
+               (->> (sht/contacts-page-body q page-of-contacts
+                                            num-pages
+                                            current-page)
                     sht/layout
                     shr/ok
                     (assoc context :response))))}))
