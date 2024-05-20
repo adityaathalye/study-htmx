@@ -22,7 +22,7 @@
    [:input {:type "submit" :value "Search"}]])
 
 (defn contacts-list
-  [contacts]
+  [contacts total-pages current-page]
   (list
    [:table
     [:thead
@@ -33,7 +33,15 @@
         [:td fname] [:td lname] [:td phone] [:td email]
         [:td
          [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
-         [:a {:href (format "/contacts/view/%s" id)} "View"]]])]]
+         [:a {:href (format "/contacts/view/%s" id)} "View"]]])
+     (when (< current-page total-pages)
+       [:tr
+        [:td {:colspan 5 :style "text-align: center"}
+         [:button {:hx-target "closest tr"
+                   :hx-swap "outerHTML"
+                   :hx-select "tbody > tr"
+                   :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
+          "Load More"]]])]]
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
 
 (defn contact-form
@@ -78,13 +86,7 @@
 (defn contacts-page-body
   [search-q contacts total-pages current-page]
   (list (contact-search-form search-q)
-        [:p
-         (when (> current-page 1)
-           [:a {:href (format "/contacts?page=%s" (max (dec current-page) 1))} "< Prev"])
-         (format " (current page: %s) " current-page)
-         (when (< current-page total-pages)
-           [:a {:href (format "/contacts?page=%s" (max (inc current-page) 1))} "Next >"])]
-        (contacts-list contacts)))
+        (contacts-list contacts total-pages current-page)))
 
 (defn contact-view
   [id {:keys [fname lname email phone] :as _contact-details}]
