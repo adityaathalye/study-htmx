@@ -44,9 +44,9 @@
    [:legend "Contact Values"]
    [:p
     (hf/label "email" "Email: ")
-    (println id)
     (hf/email-field {:hx-get (format "/contacts/validate-email/%s" (or id "new"))
                      :hx-target "next .error"
+                     :hx-trigger "change, keyup delay:500ms changed"
                      :placeholder "Email"}
                     "email" email)
     [:span {:class "error"}
