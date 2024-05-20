@@ -49,9 +49,9 @@
                   (assoc context :response)))}))
 
 (defn duplicate-email?
-  [db email]
+  [db email id]
   (some #(= email (:email %))
-        (vals @db)))
+        (vals (dissoc @db id))))
 
 (defn create-or-update-contact!
   [db id contact]
@@ -61,7 +61,7 @@
                               errors))
                           #{}
                           contact)
-        errors (if (duplicate-email? db (:email contact))
+        errors (if (duplicate-email? db (:email contact) id)
                  (conj errors :email-duplicate)
                  errors)]
     (if (not-empty errors)
@@ -100,7 +100,7 @@
     :enter (fn [{:keys [request] :as context}]
              (let [id (-> request :path-params :id)
                    contact (get @contacts-db id)]
-               (->> contact
+               (->> (assoc contact :id id)
                     (sht/contact-view id)
                     sht/layout
                     shr/ok
@@ -112,7 +112,7 @@
     :enter (fn [{:keys [request] :as context}]
              (let [id (-> request :path-params :id)
                    contact (get @contacts-db id)]
-               (->> contact
+               (->> (assoc contact :id id)
                     (sht/contact-edit id)
                     sht/layout
                     shr/ok
@@ -129,7 +129,7 @@
                                       id
                                       new-contact-data)
                    response (if (not-empty (:show-error-set maybe-new-contact))
-                              (->> maybe-new-contact
+                              (->> (assoc maybe-new-contact :id id)
                                    (sht/contact-edit id)
                                    sht/layout
                                    shr/ok)
@@ -150,8 +150,10 @@
    {:name ::validate-email-for-contact
     :enter (fn [{:keys [request] :as context}]
              (let [input-email (-> request :params :email)
+                   contact-id (-> request :path-params :contact-id)
                    response (when (duplicate-email? contacts-db
-                                                    input-email)
+                                                    input-email
+                                                    contact-id)
                               "Sorry. Email already taken.")]
                (assoc context :response
                       (-> response shr/ok))))}))

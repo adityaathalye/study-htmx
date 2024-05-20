@@ -37,14 +37,15 @@
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
 
 (defn contact-form
-  [{:keys [fname lname phone email show-error-set]
+  [{:keys [id fname lname phone email show-error-set]
     :or {show-error-set #{}}
     :as _contact}]
   [:fieldset
    [:legend "Contact Values"]
    [:p
     (hf/label "email" "Email: ")
-    (hf/email-field {:hx-get "/contacts/validate-email"
+    (println id)
+    (hf/email-field {:hx-get (format "/contacts/validate-email/%s" (or id "new"))
                      :hx-target "next .error"
                      :placeholder "Email"}
                     "email" email)
