@@ -33,13 +33,15 @@
         [:td fname] [:td lname] [:td phone] [:td email]
         [:td
          [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
-         [:a {:href (format "/contacts/view/%s" id)} "View"]]])
+         [:a {:href (format "/contacts/view/%s" id)} "View"]]])]
+    [:tfoot {:id "loadMore"}
      (when (< current-page total-pages)
        [:tr
         [:td {:colspan 5 :style "text-align: center"}
-         [:button {:hx-target "closest tr"
-                   :hx-swap "outerHTML"
+         [:button {:hx-target "previous tbody > tr"
+                   :hx-swap "afterend"
                    :hx-select "tbody > tr"
+                   :hx-select-oob "#loadMore"
                    :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
           "Load More"]]])]]
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
