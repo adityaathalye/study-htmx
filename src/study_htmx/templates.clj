@@ -18,7 +18,11 @@
   [search-q]
   [:form {:action "/contacts" :method "get"}
    [:label {:for "search"} "Search Term: "]
-   [:input {:id "search" :type "search" :name "q" :value search-q}]
+   [:input {:id "search" :type "search" :name "q" :value search-q
+            :hx-get "/contacts"
+            :hx-trigger "search, keyup delay:200ms changed"
+            :hx-target "tbody"
+            :hx-select "tbody > tr"}]
    [:input {:type "submit" :value "Search"}]])
 
 (defn contacts-list
