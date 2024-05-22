@@ -7,7 +7,7 @@
    (merge
     {:status status
      :headers (assoc headers "Content-Type" "text/html")}
-    (when body {:body (hp/html5 body)}))))
+    (when body {:body body}))))
 
 (defn ok
   [body & {:as headers}]

@@ -4,7 +4,7 @@
 
 (defn layout
   [body]
-  (list
+  (hp/html5
    [:head
     [:title "Contacts App"]
     (hp/include-css "/css/site.css")
@@ -22,8 +22,18 @@
             :hx-get "/contacts"
             :hx-trigger "search, keyup delay:200ms changed"
             :hx-target "tbody"
-            :hx-select "tbody > tr"}]
+            :hx-swap "innerHTML"
+            :hx-push-url "true"}]
    [:input {:type "submit" :value "Search"}]])
+
+(defn contact-rows
+  [contacts]
+  (doall (for [[id {:keys [fname lname phone email]}] contacts]
+           [:tr
+            [:td fname] [:td lname] [:td phone] [:td email]
+            [:td
+             [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
+             [:a {:href (format "/contacts/view/%s" id)} "View"]]])))
 
 (defn contacts-list
   [contacts total-pages current-page]
@@ -32,12 +42,7 @@
     [:thead
      [:tr [:td "First Name"] [:td "Last Name"] [:td "Phone"] [:td "Email"] [:td "Action"]]]
     [:tbody
-     (for [[id {:keys [fname lname phone email]}] contacts]
-       [:tr
-        [:td fname] [:td lname] [:td phone] [:td email]
-        [:td
-         [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
-         [:a {:href (format "/contacts/view/%s" id)} "View"]]])]
+     (contact-rows contacts)]
     [:tfoot {:id "load-more"
              :hx-swap-oob "true"}
      (when (< current-page total-pages)

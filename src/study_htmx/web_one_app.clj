@@ -3,7 +3,9 @@
    [clojure.string :as s]
    [io.pedestal.interceptor :as interceptor]
    [study-htmx.response :as shr]
-   [study-htmx.templates :as sht]))
+   [study-htmx.templates :as sht]
+   [hiccup2.core :as h2c]
+   [hiccup.page :as hp]))
 
 (defonce contacts-db
   (atom (into {}
@@ -45,11 +47,15 @@
                                   page)
                    page-of-contacts (nth contacts-paged (dec current-page)
                                          [])
-                   page-of-contacts (into {} page-of-contacts)]
-               (->> (sht/contacts-page-body q page-of-contacts
-                                            num-pages
-                                            current-page)
-                    sht/layout
+                   page-of-contacts (into {} page-of-contacts)
+                   response (if (= (get-in request [:headers "hx-trigger"])
+                                   "search")
+                              (str (h2c/html (sht/contact-rows page-of-contacts)))
+                              (sht/layout
+                               (sht/contacts-page-body q page-of-contacts
+                                                       num-pages
+                                                       current-page)))]
+               (->> response
                     shr/ok
                     (assoc context :response))))}))
 
