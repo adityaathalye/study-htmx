@@ -34,16 +34,17 @@
         [:td
          [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
          [:a {:href (format "/contacts/view/%s" id)} "View"]]])]
-    [:tfoot {:id "load-more"
-             :hx-swap-oob "true"}
+    [:tfoot {:id "load-more"}
      (when (< current-page total-pages)
        [:tr
         [:td {:colspan 5 :style "text-align: center"}
-         [:button {:hx-target "previous tbody > tr"
-                   :hx-swap "afterend"
-                   :hx-select "tbody > tr"
-                   :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
-          "Load More"]]])]]
+         [:span {:hx-target "previous tbody > tr"
+                 :hx-trigger "revealed"
+                 :hx-swap "afterend"
+                 :hx-select "tbody > tr"
+                 :hx-select-oob "#load-more"
+                 :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
+          "Loading More..."]]])]]
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
 
 (defn contact-form
