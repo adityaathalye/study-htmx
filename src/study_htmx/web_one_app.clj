@@ -43,7 +43,8 @@
                    current-page (if (>= page num-pages)
                                   num-pages
                                   page)
-                   page-of-contacts (nth contacts-paged (dec current-page))
+                   page-of-contacts (nth contacts-paged (dec current-page)
+                                         [])
                    page-of-contacts (into {} page-of-contacts)]
                (->> (sht/contacts-page-body q page-of-contacts
                                             num-pages
