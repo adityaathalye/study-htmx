@@ -34,14 +34,14 @@
         [:td
          [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
          [:a {:href (format "/contacts/view/%s" id)} "View"]]])]
-    [:tfoot {:id "loadMore"}
+    [:tfoot {:id "load-more"
+             :hx-swap-oob "true"}
      (when (< current-page total-pages)
        [:tr
         [:td {:colspan 5 :style "text-align: center"}
          [:button {:hx-target "previous tbody > tr"
                    :hx-swap "afterend"
                    :hx-select "tbody > tr"
-                   :hx-select-oob "#loadMore"
                    :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
           "Load More"]]])]]
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
