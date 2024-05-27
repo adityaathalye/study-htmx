@@ -107,7 +107,7 @@
   (let [id (->> @db
                 keys
                 (map #(Integer/parseInt %))
-                (apply max)
+                (apply (partial max 0))
                 inc
                 str)]
     (create-or-update-contact! db id contact)))
