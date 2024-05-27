@@ -38,7 +38,12 @@
             [:td fname] [:td lname] [:td phone] [:td email]
             [:td
              [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
-             [:a {:href (format "/contacts/view/%s" id)} "View"]]])))
+             [:a {:href (format "/contacts/view/%s" id)} "View"] " / "
+             [:a {:href "#"
+                  :hx-delete (format "/contacts/delete/%s" id)
+                  :hx-confirm "Delete for sure, forever?!"
+                  :hx-target "body"}
+              "Delete"]]])))
 
 (defn contacts-list
   [contacts total-pages current-page]
