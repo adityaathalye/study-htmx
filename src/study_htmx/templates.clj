@@ -58,7 +58,11 @@
                    :hx-select "tbody > tr"
                    :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
           "Load More"]]])]]
-   [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]]))
+   [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]
+    [:span {:hx-get "/contacts/count" :hx-trigger "load"}
+     [:img {:id "spinner" :class "htmx-indicator"
+            :style "width: 1em; vertical-align: middle"
+            :src "/img/spinning-circles.svg"}]]]))
 
 (defn contact-form
   [{:keys [id fname lname phone email show-error-set]

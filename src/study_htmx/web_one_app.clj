@@ -59,6 +59,18 @@
                     shr/ok
                     (assoc context :response))))}))
 
+(defn count-contacts!
+  []
+  (format "(%s total contacts)"
+          (count @contacts-db)))
+
+(def count-contacts-handler
+  {:name ::count-contacts
+   :enter (fn [context]
+            (->> (count-contacts!)
+                 shr/ok
+                 (assoc context :response)))})
+
 (def new-contact-page-handler
   (interceptor/interceptor
    {:name ::new-contact-page

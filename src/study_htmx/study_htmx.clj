@@ -68,6 +68,9 @@
     ["/contacts"
      :get web-one/search-contacts-handler
      :route-name ::web-one/search-contacts]
+    ["/contacts/count"
+     :get web-one/count-contacts-handler
+     :route-name ::web-one/count-contacts]
     ["/contacts/new"
      :get web-one/new-contact-page-handler
      :route-name ::web-one/new-contact-page]
