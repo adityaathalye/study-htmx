@@ -79,3 +79,8 @@ td {
 tr:is(:hover, :focus-within) [data-overflow-menu] {
     visibility: visible;
 }
+
+
+img {
+    padding 0.1em;
+}

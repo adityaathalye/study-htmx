@@ -33,7 +33,7 @@
   (atom (make-system {} {})))
 
 (def supported-types
-  ["application/json" "text/html"])
+  ["application/json" "text/html" "image/svg+xml"])
 
 (def content-negotiation-interceptor
   (content-negotiation/negotiate-content supported-types))

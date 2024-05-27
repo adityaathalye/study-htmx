@@ -23,8 +23,13 @@
             :hx-trigger "search, keyup delay:200ms changed"
             :hx-target "tbody"
             :hx-swap "innerHTML"
-            :hx-push-url "true"}]
-   [:input {:type "submit" :value "Search"}]])
+            :hx-push-url "true"
+            :hx-indicator "#spinner"}]
+   [:input {:type "submit" :value "Search"}]
+   [:img {:id "spinner" :class "htmx-indicator"
+          :style "width: 1em; vertical-align: middle"
+          :src "/img/spinning-circles.svg"
+          :alt "Searching contacts..."}]])
 
 (defn contact-rows
   [contacts]
