@@ -9,8 +9,8 @@
     [:title "Contacts App"]
     (hp/include-css "/css/site.css")
     [:script {:type "text/javascript"
-              :src "https://unpkg.com/htmx.org@1.9.2"
-              :integrity "sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h"
+              :src "https://unpkg.com/htmx.org@1.9.12"
+              :integrity "sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
               :crossorigin "anonymous"}]]
    [:body {:hx-boost "true"} body]))
 
@@ -39,10 +39,12 @@
             [:td
              [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
              [:a {:href (format "/contacts/view/%s" id)} "View"] " / "
-             [:a {:href "#"
+             [:a {:class "delete-contact"
+                  :href "#"
                   :hx-delete (format "/contacts/delete/%s" id)
                   :hx-confirm "Delete for sure, forever?!"
-                  :hx-target "body"}
+                  :hx-swap "outerHTML swap:0.5s"
+                  :hx-target "closest tr"}
               "Delete"]]])))
 
 (defn contacts-list
@@ -64,7 +66,7 @@
                    :hx-get (format "/contacts?page=%s" (max (inc current-page) 1))}
           "Load More"]]])]]
    [:p [:a {:href "/contacts/new"} [:strong "Add New Contact"]]
-    [:span {:hx-get "/contacts/count" :hx-trigger "revealed"}
+    [:span {:hx-get "/contacts/count" :hx-trigger "load, click from:(tbody tr a.delete-contact)"}
      [:img {:id "spinner" :class "htmx-indicator"
             :style "width: 1em; vertical-align: middle"
             :src "/img/spinning-circles.svg"}]]]))
@@ -130,7 +132,8 @@
    (hf/form-to [:post (format "/contacts/edit/%s" id)]
                (contact-form contact)
                [:p [:a {:href "/contacts"} "Back"]])
-   [:button {:hx-delete (format "/contacts/delete/%s" id)
+   [:button {:id "delete-btn"
+             :hx-delete (format "/contacts/delete/%s" id)
              :hx-target "body"
              :hx-push-url "true"
              :hx-confirm "Delete for sure?!"} "Delete Contact"]))

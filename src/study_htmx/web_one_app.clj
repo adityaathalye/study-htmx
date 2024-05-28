@@ -32,7 +32,7 @@
   (interceptor/interceptor
    {:name ::search-contacts
     :enter (fn [{:keys [request] :as context}]
-             (let [page-size 2
+             (let [page-size 5
                    q (-> request :query-params :q)
                    page (-> request :query-params :page
                             ((fnil Integer/parseInt "1"))
@@ -172,10 +172,14 @@
   (interceptor/interceptor
    {:name ::delete-contact-handler
     :enter (fn [{:keys [request headers] :as context}]
-             (let [id (-> request :path-params :id)]
+             (let [id (-> request :path-params :id)
+                   delete-btn? (= (get-in request [:headers "HX-Trigger"])
+                                  "delete-btn")]
                (swap! contacts-db dissoc id)
                (assoc context :response
-                      (shr/see-other "/contacts" headers))))}))
+                      (if delete-btn?
+                        (shr/see-other "/contacts" headers)
+                        (-> "" shr/ok)))))}))
 
 (def validate-email-for-contact
   (interceptor/interceptor

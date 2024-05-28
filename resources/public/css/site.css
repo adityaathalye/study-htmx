@@ -80,6 +80,11 @@ tr:is(:hover, :focus-within) [data-overflow-menu] {
     visibility: visible;
 }
 
+tr.htmx-swapping {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
 
 img {
     padding 0.1em;
