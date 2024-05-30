@@ -7,17 +7,23 @@
    [hiccup2.core :as h2c]
    [hiccup.page :as hp]))
 
+(def ^{:private true} contacts-db-init
+  (into {}
+        (map (fn [s n]
+               (let [n (inc n)]
+                 [(str n)
+                  {:fname (str s n)
+                   :lname (str "bar" n)
+                   :phone "9876543210"
+                   :email (format "%s.%s@example.com" s n)}]))
+             ["foo" "bar" "foobarbaz" "quxx" "moofoo" "bazquxx" "barmoobarbaz"]
+             (range))))
+
 (defonce contacts-db
-  (atom (into {}
-              (map (fn [s n]
-                     (let [n (inc n)]
-                       [(str n)
-                        {:fname (str s n)
-                         :lname (str "bar" n)
-                         :phone "9876543210"
-                         :email (format "%s.%s@example.com" s n)}]))
-                   ["foo" "bar" "foobarbaz" "quxx" "moofoo" "bazquxx" "barmoobarbaz"]
-                   (range)))))
+  (atom contacts-db-init))
+
+(comment
+  (reset! contacts-db contacts-db-init))
 
 (defn search-contacts
   [query-str contacts]
