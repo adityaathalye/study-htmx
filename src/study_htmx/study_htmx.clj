@@ -68,6 +68,11 @@
     ["/contacts"
      :get web-one/search-contacts-handler
      :route-name ::web-one/search-contacts]
+    ["/contacts"
+     :delete [(body-params/body-params)
+              params/keyword-params
+              web-one/bulk-delete-contacts]
+     :route-name ::web-one/bulk-delete-contacts]
     ["/contacts/count"
      :get web-one/count-contacts-handler
      :route-name ::web-one/count-contacts]

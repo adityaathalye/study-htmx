@@ -187,6 +187,20 @@
                         (shr/see-other "/contacts" headers)
                         (-> "" shr/ok)))))}))
 
+(def bulk-delete-contacts
+  (interceptor/interceptor
+   {:name ::bulk-delete-contacts
+    :leave (fn [{:keys [request] :as context}]
+             (let [contact-ids (-> request :form-params :selected_contact_ids)
+                   contact-ids (if (string? contact-ids)
+                                 [contact-ids]
+                                 contact-ids)]
+               (apply swap! contacts-db
+                      dissoc
+                      contact-ids)
+               ((:enter search-contacts-handler)
+                (assoc-in context [:request :query-params :q] ""))))}))
+
 (def validate-email-for-contact
   (interceptor/interceptor
    {:name ::validate-email-for-contact

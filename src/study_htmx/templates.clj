@@ -35,6 +35,7 @@
   [contacts]
   (doall (for [[id {:keys [fname lname phone email]}] contacts]
            [:tr
+            [:td [:input {:type "checkbox" :name "selected_contact_ids" :value id :autocomplete "off"}]]
             [:td fname] [:td lname] [:td phone] [:td email]
             [:td
              [:a {:href (format "/contacts/edit/%s" id)} "Edit"] " / "
@@ -49,17 +50,17 @@
 
 (defn contacts-list
   [contacts total-pages current-page]
-  (list
+  [:form
    [:table
     [:thead
-     [:tr [:td "First Name"] [:td "Last Name"] [:td "Phone"] [:td "Email"] [:td "Action"]]]
+     [:tr [:td "Bulk Select"] [:td "First Name"] [:td "Last Name"] [:td "Phone"] [:td "Email"] [:td "Action"]]]
     [:tbody
      (contact-rows contacts)]
     [:tfoot {:id "load-more"
              :hx-swap-oob "true"}
      (when (< current-page total-pages)
        [:tr
-        [:td {:colspan 5 :style "text-align: center"}
+        [:td {:colspan 6 :style "text-align: center"}
          [:button {:hx-target "previous tbody > tr"
                    :hx-swap "afterend"
                    :hx-select "tbody > tr"
@@ -69,7 +70,11 @@
     [:span {:hx-get "/contacts/count" :hx-trigger "load, click from:(tbody tr a.delete-contact)"}
      [:img {:id "spinner" :class "htmx-indicator"
             :style "width: 1em; vertical-align: middle"
-            :src "/img/spinning-circles.svg"}]]]))
+            :src "/img/spinning-circles.svg"}]]]
+   [:p [:button {:hx-delete "/contacts"
+                 :hx-confirm "Are you sure you want to delete these contacts?"
+                 :hx-target "body"}
+        "Delete Contacts"]]])
 
 (defn contact-form
   [{:keys [id fname lname phone email show-error-set]
