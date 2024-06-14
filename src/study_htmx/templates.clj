@@ -143,6 +143,12 @@
              :hx-push-url "true"
              :hx-confirm "Delete for sure?!"} "Delete Contact"]))
 
+(defn contacts-archive
+  []
+  [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML"}
+   [:button {:hx-post "/contacts/archive"}
+    "Download Contacts Archive"]])
+
 (comment
   (contact-view "2" study-htmx.web-one-app/contacts-db)
 

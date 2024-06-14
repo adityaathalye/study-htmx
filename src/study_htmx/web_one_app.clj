@@ -214,6 +214,9 @@
                (assoc context :response
                       (-> response shr/ok))))}))
 
+(def archive-of-contacts
+  (interceptor/interceptor))
+
 (comment
   (search-contacts "foo" @contacts-db)
 
