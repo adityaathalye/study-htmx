@@ -73,6 +73,9 @@
               params/keyword-params
               web-one/bulk-delete-contacts]
      :route-name ::web-one/bulk-delete-contacts]
+    ["/contacts/archive"
+     :post web-one/archive-of-contacts
+     :route-name ::web-one/archive-of-contacts]
     ["/contacts/count"
      :get web-one/count-contacts-handler
      :route-name ::web-one/count-contacts]

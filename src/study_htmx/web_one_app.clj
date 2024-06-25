@@ -1,6 +1,7 @@
 (ns study-htmx.web-one-app
   (:require
    [clojure.string :as s]
+   [clojure.data.json :as json]
    [io.pedestal.interceptor :as interceptor]
    [study-htmx.response :as shr]
    [study-htmx.templates :as sht]
@@ -214,8 +215,67 @@
                (assoc context :response
                       (-> response shr/ok))))}))
 
+(defonce archiver
+  (agent {:status :waiting
+          :progress 0
+          :archive-file nil}))
+
+(defn do-archive!
+  [contacts total-contacts archiver]
+  (cond
+    (empty? contacts)
+    (send archiver assoc :status :done)
+
+    (= (:status @archiver) :waiting)
+    (let [file-path "resources/archive.json" #_(format "resources/%s.json" (random-uuid))]
+      (spit file-path "[")
+      (recur contacts
+             total-contacts
+             (send archiver assoc
+                   :status :running
+                   :archive-file file-path)))
+
+    (= (:status @archiver) :running)
+    (recur (rest contacts)
+           total-contacts
+           (send-off archiver
+                     (fn write-archive! [arch]
+                       (spit (:archive-file arch)
+                             (str (json/write-str (first contacts))
+                                  (if (next contacts) "," "]"))
+                             :append true)
+                       (Thread/sleep 5000)
+                       (assoc arch
+                              :progress
+                              (-> (- total-contacts (dec (count contacts)))
+                                  (/ total-contacts)
+                                  (* 100))))))))
+
+(comment
+  (do-archive! (into [] @contacts-db)
+               (count @contacts-db)
+               archiver)
+
+  (agent-error archiver)
+
+  (send archiver
+        assoc
+        :status :waiting
+        :progress 0
+        :archive-file nil))
+
 (def archive-of-contacts
-  (interceptor/interceptor))
+  (interceptor/interceptor
+   {:name ::archive-of-contacts
+    :enter (fn [context]
+             (assoc context :archiver archiver))
+    :leave (fn [context]
+             (assoc context
+                    :response
+                    (-> (sht/contacts-archive (:archiver context))
+                        h2c/html
+                        str
+                        shr/ok)))}))
 
 (comment
   (search-contacts "foo" @contacts-db)

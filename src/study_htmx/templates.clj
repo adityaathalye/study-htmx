@@ -115,10 +115,21 @@
               (contact-form contact)
               [:a {:href "/contacts"} "Back"]))
 
+(defn contacts-archive
+  [archiver]
+  [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML" :style "margin-bottom: 0.5em"}
+   (if (= (get archiver :status :waiting) :running)
+     "Running..."
+     [:button {:hx-post "/contacts/archive"}
+      "Download Contacts Archive"])])
+
 (defn contacts-page-body
-  [search-q contacts total-pages current-page]
-  (list (contact-search-form search-q)
-        (contacts-list contacts total-pages current-page)))
+  ([search-q contacts total-pages current-page]
+   (contacts-page-body search-q contacts total-pages current-page nil))
+  ([search-q contacts total-pages current-page archiver]
+   (list (contacts-archive archiver)
+         (contact-search-form search-q)
+         (contacts-list contacts total-pages current-page))))
 
 (defn contact-view
   [id {:keys [fname lname email phone] :as _contact-details}]
@@ -142,12 +153,6 @@
              :hx-target "body"
              :hx-push-url "true"
              :hx-confirm "Delete for sure?!"} "Delete Contact"]))
-
-(defn contacts-archive
-  []
-  [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML"}
-   [:button {:hx-post "/contacts/archive"}
-    "Download Contacts Archive"]])
 
 (comment
   (contact-view "2" study-htmx.web-one-app/contacts-db)
