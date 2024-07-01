@@ -215,54 +215,72 @@
                (assoc context :response
                       (-> response shr/ok))))}))
 
-(defonce archiver
-  (agent {:status :waiting
+(defn make-archiver
+  []
+  (agent {:status (atom :waiting)
           :progress 0
-          :archive-file nil}))
+          :archive-file nil}
+         :validator (fn [a]
+                      (not (#{:cancelled :paused} @(:status a))))))
+
+(defonce archiver
+  (make-archiver))
 
 (defn do-archive!
   [contacts total-contacts archiver]
-  (cond
-    (empty? contacts)
-    (send archiver assoc :status :done)
-
-    (= (:status @archiver) :waiting)
+  (when (= @(:status @archiver) :waiting)
     (let [file-path "resources/archive.json" #_(format "resources/%s.json" (random-uuid))]
+      (swap! (:status @archiver) (constantly :running))
       (spit file-path "[")
-      (recur contacts
-             total-contacts
-             (send archiver assoc
-                   :status :running
-                   :archive-file file-path)))
+      (send archiver assoc
+            :archive-file file-path)))
 
-    (= (:status @archiver) :running)
-    (recur (rest contacts)
-           total-contacts
-           (send-off archiver
-                     (fn write-archive! [arch]
-                       (spit (:archive-file arch)
-                             (str (json/write-str (first contacts))
-                                  (if (next contacts) "," "]"))
-                             :append true)
-                       (Thread/sleep 5000)
-                       (assoc arch
-                              :progress
-                              (-> (- total-contacts (dec (count contacts)))
-                                  (/ total-contacts)
-                                  (* 100))))))))
+  (when (= @(:status @archiver) :running)
+    (doseq [contact contacts]
+      (send archiver update :progress inc)
+      (send-off archiver
+                (fn write-archive! [arch]
+                  (spit (:archive-file arch)
+                        (str (json/write-str contact)
+                             (if (= (:progress arch) total-contacts) "]" ","))
+                        :append true)
+                  (Thread/sleep 5000)
+                  arch))))
+  (swap! (:status @archiver) (constantly :done))
+  archiver)
+
+(defn pause-archive!
+  [archiver]
+  (swap! (:status @archiver) (constantly :paused))
+  archiver)
+
+(defn resume-archive!
+  [archiver]
+  (swap! (:status @archiver) :running)
+  (restart-agent archiver
+                 @archiver)
+  archiver)
+
+(defn reset-archive!
+  [archiver]
+  (alter-var-root #'archiver (constantly (make-archiver))))
+
+(defn cancel-archive!
+  [archiver]
+  (pause-archive! archiver)
+  (reset-archive! archiver))
 
 (comment
   (do-archive! (into [] @contacts-db)
                (count @contacts-db)
                archiver)
 
-  (agent-error archiver)
+  (pause-archive! archiver)
+  (resume-archive! archiver)
+  (reset-archive! archiver)
+  (cancel-archive! archiver)
 
-  (send archiver
-        assoc
-        :status :waiting
-        :progress 0
-        :archive-file nil))
+  (agent-error archiver))
 
 (def archive-of-contacts
   (interceptor/interceptor
