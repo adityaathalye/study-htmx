@@ -118,7 +118,7 @@
 (defn contacts-archive
   [archiver]
   [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML" :style "margin-bottom: 0.5em"}
-   (if (= (get archiver :status :waiting) :running)
+   (if (= (and archiver @(get archiver :status)) :running)
      "Running..."
      [:button {:hx-post "/contacts/archive"}
       "Download Contacts Archive"])])

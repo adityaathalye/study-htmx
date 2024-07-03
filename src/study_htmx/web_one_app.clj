@@ -246,7 +246,9 @@
                         :append true)
                   (Thread/sleep 5000)
                   arch))))
-  (swap! (:status @archiver) (constantly :done))
+  (send-off archiver (fn [a]
+                       (swap! (:status a) (constantly :done))
+                       a))
   archiver)
 
 (defn pause-archive!
@@ -290,7 +292,7 @@
     :leave (fn [context]
              (assoc context
                     :response
-                    (-> (sht/contacts-archive (:archiver context))
+                    (-> (sht/contacts-archive @(:archiver context))
                         h2c/html
                         str
                         shr/ok)))}))
