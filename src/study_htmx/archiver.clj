@@ -33,7 +33,7 @@
                         (str (json/write-str contact)
                              (if (= (:progress arch) total-contacts) "]" ","))
                         :append true)
-                  (Thread/sleep 5000)
+                  (Thread/sleep 1000)
                   arch))))
   (send-off archiver (fn [a]
                        (swap! (:status a) (constantly :done))

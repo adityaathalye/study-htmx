@@ -76,6 +76,9 @@
     ["/contacts/archive"
      :post web-one/archive-of-contacts
      :route-name ::web-one/archive-of-contacts]
+    ["/contacts/archive"
+     :get web-one/archive-of-contacts-status
+     :route-name ::web-one/archive-of-contacts-status]
     ["/contacts/count"
      :get web-one/count-contacts-handler
      :route-name ::web-one/count-contacts]

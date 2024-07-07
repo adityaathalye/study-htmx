@@ -120,14 +120,16 @@
   [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML" :style "margin-bottom: 0.5em"}
    (if (= (and archiver @status) :running)
      (let [percent-progress (-> progress (/ total-contacts) (* 100.0) Math/round)]
-       (list [:div (format "Running... %s of %s contacts archived."
-                           progress
-                           total-contacts)]
-             [:div {:class "progress"}
-              [:div {:class "progress-bar"
-                     :role "progressbar"
-                     :aria-valuenow (format "%s" percent-progress)
-                     :style (str "width: " percent-progress "%")}]]))
+       [:div {:hx-get "/contacts/archive"
+              :hx-trigger "load delay:500ms"}
+        [:div (format "Running... %s of %s contacts archived."
+                      progress
+                      total-contacts)]
+        [:div {:class "progress"}
+         [:div {:class "progress-bar"
+                :role "progressbar"
+                :aria-valuenow (format "%s" percent-progress)
+                :style (str "width: " percent-progress "%")}]]])
      [:button {:hx-post "/contacts/archive"}
       "Download Contacts Archive"])])
 

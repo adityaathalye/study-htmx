@@ -222,6 +222,25 @@
   (interceptor/interceptor
    {:name ::archive-of-contacts
     :enter (fn [context]
+             (when (= @(:status @archiver/archiver) :done)
+               (archiver/reset-archive! archiver/archiver))
+             (when (= @(:status @archiver/archiver) :waiting)
+               (archiver/do-archive! (into [] @contacts-db)
+                                     (count @contacts-db)
+                                     archiver/archiver))
+             (assoc context :archiver archiver/archiver))
+    :leave (fn [context]
+             (assoc context
+                    :response
+                    (-> (sht/contacts-archive @(:archiver context))
+                        h2c/html
+                        str
+                        shr/ok)))}))
+
+(def archive-of-contacts-status
+  (interceptor/interceptor
+   {:name ::archive-of-contacts-status
+    :enter (fn [context]
              (assoc context :archiver archiver/archiver))
     :leave (fn [context]
              (assoc context
