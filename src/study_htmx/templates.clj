@@ -116,10 +116,12 @@
               [:a {:href "/contacts"} "Back"]))
 
 (defn contacts-archive
-  [archiver]
+  [{:keys [status total-contacts progress] :as archiver}]
   [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML" :style "margin-bottom: 0.5em"}
-   (if (= (and archiver @(get archiver :status)) :running)
-     "Running..."
+   (if (= (and archiver @status) :running)
+     (format "Running... %s of %s contacts archived."
+             progress
+             total-contacts)
      [:button {:hx-post "/contacts/archive"}
       "Download Contacts Archive"])])
 

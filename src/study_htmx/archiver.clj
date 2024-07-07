@@ -5,6 +5,7 @@
 (defn make-archiver
   []
   (agent {:status (atom :waiting)
+          :total-contacts 0
           :progress 0
           :archive-file nil}
          :validator (fn [a]
@@ -20,6 +21,7 @@
       (swap! (:status @archiver) (constantly :running))
       (spit file-path "[")
       (send archiver assoc
+            :total-contacts total-contacts
             :archive-file file-path)))
 
   (when (= @(:status @archiver) :running)
