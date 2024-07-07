@@ -37,7 +37,10 @@
 (def search-contacts-handler
   (interceptor/interceptor
    {:name ::search-contacts
-    :enter (fn [{:keys [request] :as context}]
+    :enter (fn [context]
+             (assoc context :archiver archiver/archiver))
+
+    :leave (fn [{:keys [request] :as context}]
              (let [page-size 5
                    q (-> request :query-params :q)
                    page (-> request :query-params :page
@@ -60,7 +63,8 @@
                               (sht/layout
                                (sht/contacts-page-body q page-of-contacts
                                                        num-pages
-                                                       current-page)))]
+                                                       current-page
+                                                       @(:archiver context))))]
                (->> response
                     shr/ok
                     (assoc context :response))))}))
