@@ -37,7 +37,7 @@
 
 (defn resume-job!
   [job-runner]
-  (swap! (:status @job-runner) :running)
+  (swap! (:status @job-runner) (constantly :running))
   (restart-agent job-runner @job-runner))
 
 (defn reset-job!
