@@ -59,6 +59,8 @@
 (defn cancel-archive!
   [archiver]
   (pause-archive! archiver)
+  (when-let [f (:archive-file @archiver)]
+    (spit f ""))
   (reset-archive! archiver))
 
 (comment

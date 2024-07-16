@@ -266,6 +266,20 @@
                                    {"Content-Type" "application/json"
                                     "Content-Disposition" "contacts.json"}))))}))
 
+(def archive-of-contacts-cancel
+  (interceptor/interceptor
+   {:name ::archive-of-contacts-cancel
+    :enter (fn [context]
+             (archiver/cancel-archive! archiver/archiver)
+             (assoc context :archiver archiver/archiver))
+    :leave (fn [context]
+             (assoc context
+                    :response
+                    (-> (sht/contacts-archive @(:archiver context))
+                        h2c/html
+                        str
+                        shr/ok)))}))
+
 (comment
   (search-contacts "foo" @contacts-db)
 

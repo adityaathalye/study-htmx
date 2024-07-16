@@ -80,6 +80,9 @@
     ["/contacts/archive"
      :get web-one/archive-of-contacts-status
      :route-name ::web-one/archive-of-contacts-status]
+    ["/contacts/archive"
+     :delete web-one/archive-of-contacts-cancel
+     :route-name ::web-one/archive-of-contacts-cancel]
     ["/contacts/archive/contacts-archive"
      :get [web-one/archive-of-contacts-file
            pedestal-ring/file]

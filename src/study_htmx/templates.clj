@@ -136,7 +136,8 @@
      [:a {:hx-boost "false" :href "/contacts/archive/contacts-archive"}
       "Archive Ready! Click here to download... " (hiccup.util/raw-string "&downarrow;")]
      :else [:button {:hx-post "/contacts/archive"}
-            "Download Contacts Archive"])])
+            "Download Contacts Archive"])
+   [:button {:hx-delete "/contacts/archive"} "Clear Download"]])
 
 (defn contacts-page-body
   ([search-q contacts total-pages current-page]
