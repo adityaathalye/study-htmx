@@ -128,12 +128,13 @@
                       total-contacts)]
         [:div {:class "progress"}
          [:div {:class "progress-bar"
+                :id "archive-progress"
                 :role "progressbar"
                 :aria-valuenow (format "%s" percent-progress)
                 :style (str "width: " percent-progress "%")}]]])
      (= (and archiver @status) :done)
      [:a {:hx-boost "false" :href "/contacts/archive/contacts-archive"}
-      "Archive Ready! Click here to download. &downarrow;"]
+      "Archive Ready! Click here to download... " (hiccup.util/raw-string "&downarrow;")]
      :else [:button {:hx-post "/contacts/archive"}
             "Download Contacts Archive"])])
 
