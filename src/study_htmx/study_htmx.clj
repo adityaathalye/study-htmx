@@ -9,6 +9,7 @@
    [io.pedestal.http.body-params :as body-params]
    [io.pedestal.http.params :as params]
    [io.pedestal.http.route.definition.table :as table]
+   [io.pedestal.http.ring-middlewares :as pedestal-ring]
    [study-htmx.web-one-app :as web-one]
    [study-htmx.templates :as sht]))
 
@@ -79,6 +80,10 @@
     ["/contacts/archive"
      :get web-one/archive-of-contacts-status
      :route-name ::web-one/archive-of-contacts-status]
+    ["/contacts/archive/contacts-archive"
+     :get [web-one/archive-of-contacts-file
+           pedestal-ring/file]
+     :route-name ::web-one/archive-of-contacts-file]
     ["/contacts/count"
      :get web-one/count-contacts-handler
      :route-name ::web-one/count-contacts]
@@ -126,6 +131,7 @@
                      ::http/type :jetty
                      ::http/join? false
                      ::http/port (-> system-map ::server :port)
+                     ::http/file-path "resources"
                      ::http/resource-path "public"
                      ::http/secure-headers {:content-security-policy-settings
                                             {:object-src "none"}}}]

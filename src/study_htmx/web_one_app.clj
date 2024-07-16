@@ -1,6 +1,7 @@
 (ns study-htmx.web-one-app
   (:require
    [clojure.string :as s]
+   [clojure.java.io :as io]
    [io.pedestal.interceptor :as interceptor]
    [study-htmx.response :as shr]
    [study-htmx.templates :as sht]
@@ -249,6 +250,21 @@
                         h2c/html
                         str
                         shr/ok)))}))
+
+(def archive-of-contacts-file
+  (interceptor/interceptor
+   {:name ::archive-of-contacts-file
+    :enter (fn [context]
+             (assoc context :archiver archiver/archiver
+                    :response
+                    (-> @archiver/archiver
+                        :archive-file
+                        io/file
+                        shr/ok
+                        (update-in [:headers]
+                                   merge
+                                   {"Content-Type" "application/json"
+                                    "Content-Disposition" "contacts.json"}))))}))
 
 (comment
   (search-contacts "foo" @contacts-db)

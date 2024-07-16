@@ -118,7 +118,8 @@
 (defn contacts-archive
   [{:keys [status total-contacts progress] :as archiver}]
   [:div {:id "archive-ui" :hx-target "this" :hx-swap "outerHTML" :style "margin-bottom: 0.5em"}
-   (if (= (and archiver @status) :running)
+   (cond
+     (= (and archiver @status) :running)
      (let [percent-progress (-> progress (/ total-contacts) (* 100.0) Math/round)]
        [:div {:hx-get "/contacts/archive"
               :hx-trigger "load delay:500ms"}
@@ -130,8 +131,11 @@
                 :role "progressbar"
                 :aria-valuenow (format "%s" percent-progress)
                 :style (str "width: " percent-progress "%")}]]])
-     [:button {:hx-post "/contacts/archive"}
-      "Download Contacts Archive"])])
+     (= (and archiver @status) :done)
+     [:a {:hx-boost "false" :href "/contacts/archive/contacts-archive"}
+      "Archive Ready! Click here to download. &downarrow;"]
+     :else [:button {:hx-post "/contacts/archive"}
+            "Download Contacts Archive"])])
 
 (defn contacts-page-body
   ([search-q contacts total-pages current-page]
