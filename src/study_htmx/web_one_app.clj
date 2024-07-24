@@ -184,7 +184,7 @@
    {:name ::delete-contact-handler
     :enter (fn [{:keys [request headers] :as context}]
              (let [id (-> request :path-params :id)
-                   delete-btn? (= (get-in request [:headers "HX-Trigger"])
+                   delete-btn? (= (get-in request [:headers "hx-trigger"])
                                   "delete-btn")]
                (swap! contacts-db dissoc id)
                (assoc context :response
